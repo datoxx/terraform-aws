@@ -1,17 +1,17 @@
-//connect aws
+# connect aws
 provider "aws" {
   region = "eu-north-1"
 }
 
-//variables
+# variables
 variable vpc_cidr_block {}
 variable subnet_1_cidr_block {}
 variable avail_zone {}
 variable env_prefix {}
 
 
-//start, add custom vpc and subnet inside it 
-// create custom vpc name myapp-vpc
+# start, add custom vpc and subnet inside it 
+# create custom vpc name myapp-vpc
 resource "aws_vpc" "myapp-vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
@@ -19,7 +19,7 @@ resource "aws_vpc" "myapp-vpc" {
   }
 }
 
-// create custom myapp-subnet-1 in myapp-vpc
+# create custom myapp-subnet-1 in myapp-vpc
 resource "aws_subnet" "myapp-subnet-1" {
   vpc_id = aws_vpc.myapp-vpc.id
   cidr_block = var.subnet_1_cidr_block
@@ -28,11 +28,11 @@ resource "aws_subnet" "myapp-subnet-1" {
       Name = "${var.env_prefix}-subnet-1"
   }
 }
-//end, add custom vpc and subnet inside it 
+# end, add custom vpc and subnet inside it 
 
 
-//start, add custom route-table  and internet gateway
-// create internet gateway
+# start, add custom route-table  and internet gateway
+# create internet gateway
 resource "aws_internet_gateway" "myapp-igw" {
 	vpc_id = aws_vpc.myapp-vpc.id
     
@@ -41,7 +41,7 @@ resource "aws_internet_gateway" "myapp-igw" {
    }
 }
 
-// create route-table 
+# create route-table 
 resource "aws_route_table" "myapp-route-table" {
    vpc_id = aws_vpc.myapp-vpc.id
 
@@ -54,6 +54,12 @@ resource "aws_route_table" "myapp-route-table" {
      Name = "${var.env_prefix}-route-table"
    }
  }
-//end, add custom route-table  and internet gateway
+# end, add custom route-table  and internet gateway
+
+# Associate subnet with Route Table
+resource "aws_route_table_association" "a-rtb-subnet" {
+  subnet_id      = aws_subnet.myapp-subnet-1.id
+  route_table_id = aws_route_table.myapp-route-table.id
+}
 
 
