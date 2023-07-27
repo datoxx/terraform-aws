@@ -10,7 +10,6 @@ variable avail_zone {}
 variable env_prefix {}
 
 
-
 //start, add custom vpc and subnet inside it 
 // create custom vpc name myapp-vpc
 resource "aws_vpc" "myapp-vpc" {
@@ -19,6 +18,7 @@ resource "aws_vpc" "myapp-vpc" {
       Name = "${var.env_prefix}-vpc"
   }
 }
+
 // create custom myapp-subnet-1 in myapp-vpc
 resource "aws_subnet" "myapp-subnet-1" {
   vpc_id = aws_vpc.myapp-vpc.id
@@ -29,5 +29,31 @@ resource "aws_subnet" "myapp-subnet-1" {
   }
 }
 //end, add custom vpc and subnet inside it 
+
+
+//start, add custom route-table  and internet gateway
+// create internet gateway
+resource "aws_internet_gateway" "myapp-igw" {
+	vpc_id = aws_vpc.myapp-vpc.id
+    
+    tags = {
+     Name = "${var.env_prefix}-internet-gateway"
+   }
+}
+
+// create route-table 
+resource "aws_route_table" "myapp-route-table" {
+   vpc_id = aws_vpc.myapp-vpc.id
+
+   route {
+     cidr_block = "0.0.0.0/0"
+     gateway_id = aws_internet_gateway.myapp-igw.id
+   }
+   # default route, mapping VPC CIDR block to "local", created implicitly and cannot be specified.
+   tags = {
+     Name = "${var.env_prefix}-route-table"
+   }
+ }
+//end, add custom route-table  and internet gateway
 
 
