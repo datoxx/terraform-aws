@@ -9,9 +9,9 @@ variable subnet_1_cidr_block {}
 variable avail_zone {}
 variable env_prefix {}
 variable my_ip {}
-
-
-
+variable instance_type {}
+variable ssh-key-pair-name {}
+variable public_key_location {}
 
 # start, add custom vpc and subnet inside it 
 # create custom vpc name myapp-vpc
@@ -97,4 +97,51 @@ resource "aws_security_group" "myapp-sg" {
   }
 }
 
+
+# fetch OS Images (Amazon Machine Image) 
+data "aws_ami" "amazon-linux-image" {
+  most_recent = true
+  owners = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-kernel-5.10-hvm-*-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
+
+# output Amazon Machine Image id
+output "ami_id" {
+  value = data.aws_ami.amazon-linux-image.id
+}
+
+# create key pair for ssh ec2
+resource "aws_key_pair" "ssh-key" {
+  key_name   = var.ssh-key-pair-name
+  public_key = file(var.public_key_location)
+}
+
+# create ec2 instance
+resource "aws_instance" "myapp-server" {
+  ami                         = data.aws_ami.amazon-linux-image.id
+  instance_type               = var.instance_type
+  key_name                    = aws_key_pair.ssh-key.key_name
+  associate_public_ip_address = true
+  subnet_id                   = aws_subnet.myapp-subnet-1.id
+  vpc_security_group_ids      = [aws_security_group.myapp-sg.id]
+  availability_zone			      = var.avail_zone
+
+  tags = {
+    Name = "${var.env_prefix}-server"
+  }
+}
+
+# output server public ip
+output "ec2-instance-public-ip" {
+    value = aws_instance.myapp-server.public_ip
+}
 
