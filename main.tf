@@ -105,7 +105,8 @@ data "aws_ami" "amazon-linux-image" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-kernel-5.10-hvm-*-x86_64-gp2"]
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+    # values = ["amzn2-ami-kernel-5.10-hvm-*-x86_64-gp2"]
   }
 
   filter {
@@ -138,10 +139,13 @@ resource "aws_instance" "myapp-server" {
   tags = {
     Name = "${var.env_prefix}-server"
   }
+
+  user_data = file("script.sh")
+
 }
 
 # output server public ip
-output "ec2-instance-public-ip" {
+output "ec2-server-public-ip" {
     value = aws_instance.myapp-server.public_ip
 }
 
