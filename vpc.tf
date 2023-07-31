@@ -1,7 +1,8 @@
 provider "aws" {
-    region = "eu-north-1"
+    region = var.region
 }
 
+variable region {}
 variable vpc_cidr_block {}
 variable private_subnet_cidr_blocks {}
 variable public_subnet_cidr_blocks {}
