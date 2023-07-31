@@ -1,4 +1,13 @@
-# output server public ip
-output "ec2-server-public-ip" {
-    value = module.myapp-server.instance.public_ip
+output "region" {
+  description = "AWS region"
+  value       = var.region
+}
+
+output "cluster_name" {
+  description = "Kubernetes Cluster Name"
+  value       = module.eks.cluster_name
+}
+
+output "eks" {
+  value= module.eks
 }
