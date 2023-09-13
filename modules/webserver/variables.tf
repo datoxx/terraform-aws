@@ -7,3 +7,4 @@ variable image_name {}
 variable ssh-key-pair-name {}
 variable public_key_location {}
 variable instance_type {}
+variable ssh_key_private {}

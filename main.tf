@@ -32,6 +32,7 @@ module "myapp-server" {
     ssh-key-pair-name = var.ssh-key-pair-name
     public_key_location = var.public_key_location
     instance_type = var.instance_type
+    ssh_key_private = var.ssh_key_private
 }
 
 

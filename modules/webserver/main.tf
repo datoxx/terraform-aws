@@ -71,3 +71,14 @@ resource "aws_instance" "myapp-server" {
   user_data = file("script.sh")
 
 }
+
+resource "null_resource" "configure_server" {
+  triggers = {
+    trigger = aws_instance.myapp-server.public_ip
+  }
+
+  provisioner "local-exec" {
+    working_dir = "/home/dato/Desktop/devops-nana/ansible"
+    command = "ansible-playbook --inventory ${aws_instance.myapp-server.public_ip}, --private-key ${var.ssh_key_private} --user ec2-user deploy-docker.yaml"
+  }
+}
